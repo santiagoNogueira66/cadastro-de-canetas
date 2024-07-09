@@ -1,0 +1,96 @@
+@page
+@using CRUD_C_.entidades
+@model List<Caneta>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerenciamento de Canetas</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Importando jQuery -->
+    <script>
+        // Função para carregar as canetas ao carregar a página
+        $(document).ready(function () {
+            carregarCanetas();
+        });
+
+        // Função para carregar as canetas da API
+        function carregarCanetas() {
+            $.ajax({
+                url: '/Caneta', // Endpoint da API
+                type: 'GET',
+                success: function (data) {
+                    exibirCanetas(data); // Chama função para exibir as canetas na página
+                }
+            });
+        }
+
+        // Função para exibir as canetas na página
+        function exibirCanetas(canetas) {
+            var table = '<table border="1"><tr><th>Id</th><th>Marca</th><th>Modelo</th><th>Cor</th><th>Ações</th></tr>';
+            $.each(canetas, function (index, caneta) {
+                table += '<tr>';
+                table += '<td>' + caneta.id + '</td>';
+                table += '<td>' + caneta.marca + '</td>';
+                table += '<td>' + caneta.modelo + '</td>';
+                table += '<td>' + caneta.cor + '</td>';
+                table += '<td><button onclick="editarCaneta(' + caneta.id + ')">Editar</button> ';
+                table += '<button onclick="excluirCaneta(' + caneta.id + ')">Excluir</button></td>';
+                table += '</tr>';
+            });
+            table += '</table>';
+            $('#canetasTable').html(table); // Injeta a tabela na div com id 'canetasTable'
+        }
+
+        // Função para excluir uma caneta
+        function excluirCaneta(id) {
+            if (confirm('Deseja realmente excluir esta caneta?')) {
+                $.ajax({
+                    url: '/Caneta/' + id,
+                    type: 'DELETE',
+                    success: function () {
+                        carregarCanetas(); // Recarrega a lista após a exclusão
+                    }
+                });
+            }
+        }
+
+        // Função para abrir formulário de edição de caneta
+        function editarCaneta(id) {
+            // Implemente conforme necessário para abrir um formulário de edição
+            // Exemplo: redirecionar para outra página com o formulário preenchido
+            // ou abrir um modal com os dados da caneta para edição
+            alert('Função de edição não implementada ainda.');
+        }
+    </script>
+</head>
+<body>
+    <h1>Gerenciamento de Canetas</h1>
+    <div id="canetasTable">
+        <!-- Tabela de canetas será injetada aqui -->
+    </div>
+    <hr />
+    <h2>Criar Nova Caneta</h2>
+    <form id="formCriarCaneta">
+        <label>Marca: <input type="text" name="marca" required /></label><br />
+        <label>Modelo: <input type="text" name="modelo" required /></label><br />
+        <label>Cor: <input type="text" name="cor" required /></label><br />
+        <button type="button" onclick="criarCaneta()">Criar Caneta</button>
+    </form>
+
+    <script>
+        // Função para criar uma nova caneta
+        function criarCaneta() {
+            var formData = $('#formCriarCaneta').serialize();
+            $.ajax({
+                url: '/Caneta',
+                type: 'POST',
+                data: formData,
+                success: function () {
+                    carregarCanetas(); // Recarrega a lista após a criação
+                    $('#formCriarCaneta')[0].reset(); // Limpa o formulário
+                }
+            });
+        }
+    </script>
+</body>
+</html>
